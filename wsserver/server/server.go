@@ -7,7 +7,7 @@ import (
 	"github.com/lesismal/nbio/nbhttp"
 	"github.com/lesismal/nbio/nbhttp/websocket"
 	"github.com/mssola/useragent"
-	utility "github.com/snwsnwsnw/utils"
+	"github.com/snwsnwsnw/utils"
 	"log/slog"
 	"net"
 	"net/http"
@@ -59,17 +59,17 @@ func Start(ctx context.Context) {
 		ctx:               innerCtx,
 		cancel:            cancel,
 		idAllocator:       &idAllotment{},
-		ClientBus:         utility.NewSafeMap[WSClient, struct{}](),
+		ClientBus:         utils.NewSafeMap[WSClient, struct{}](),
 		onConnect:         make(chan WSClient, 1024),
 		onDisconnect:      make(chan IDisconnectEvent, 1024),
 		onMessage:         make(chan IMessageEvent[websocket.MessageType], 1024),
-		PlayersById:       utility.NewSafeMap[PlayerId, ClientRef](),
-		PlayersByPackage:  utility.NewSafeMap[PackageId, ClientRef](),
-		PlayersByAgent:    utility.NewSafeMap[AgentId, ClientRef](),
-		PlayersByChannel:  utility.NewSafeMap[ChannelId, ClientRef](),
-		VisitorsByPackage: utility.NewSafeMap[PackageId, ClientRef](),
-		VisitorsByAgent:   utility.NewSafeMap[AgentId, ClientRef](),
-		VisitorsByChannel: utility.NewSafeMap[ChannelId, ClientRef](),
+		PlayersById:       utils.NewSafeMap[PlayerId, ClientRef](),
+		PlayersByPackage:  utils.NewSafeMap[PackageId, ClientRef](),
+		PlayersByAgent:    utils.NewSafeMap[AgentId, ClientRef](),
+		PlayersByChannel:  utils.NewSafeMap[ChannelId, ClientRef](),
+		VisitorsByPackage: utils.NewSafeMap[PackageId, ClientRef](),
+		VisitorsByAgent:   utils.NewSafeMap[AgentId, ClientRef](),
+		VisitorsByChannel: utils.NewSafeMap[ChannelId, ClientRef](),
 		WorkerNum:         32,
 		workerWg:          &sync.WaitGroup{},
 	}
@@ -390,28 +390,28 @@ func (s *WSServer) processOnConnect(client WSClient) {
 	if !client.GetUserData().Visitor {
 		m, exist := s.PlayersById.Get(client.GetUserData().PlayerId)
 		if !exist {
-			m = utility.NewSafeMap[WSClient, struct{}]()
+			m = utils.NewSafeMap[WSClient, struct{}]()
 			s.PlayersById.Set(client.GetUserData().PlayerId, m)
 		}
 		m.Set(client, struct{}{})
 
 		m, exist = s.PlayersByPackage.Get(client.GetUserData().PackageId)
 		if !exist {
-			m = utility.NewSafeMap[WSClient, struct{}]()
+			m = utils.NewSafeMap[WSClient, struct{}]()
 			s.PlayersByPackage.Set(client.GetUserData().PackageId, m)
 		}
 		m.Set(client, struct{}{})
 
 		m, exist = s.PlayersByAgent.Get(client.GetUserData().AgentId)
 		if !exist {
-			m = utility.NewSafeMap[WSClient, struct{}]()
+			m = utils.NewSafeMap[WSClient, struct{}]()
 			s.PlayersByAgent.Set(client.GetUserData().AgentId, m)
 		}
 		m.Set(client, struct{}{})
 
 		m, exist = s.PlayersByChannel.Get(client.GetUserData().ChannelId)
 		if !exist {
-			m = utility.NewSafeMap[WSClient, struct{}]()
+			m = utils.NewSafeMap[WSClient, struct{}]()
 			s.PlayersByChannel.Set(client.GetUserData().ChannelId, m)
 		}
 		m.Set(client, struct{}{})
@@ -419,21 +419,21 @@ func (s *WSServer) processOnConnect(client WSClient) {
 	} else {
 		m, exist := s.VisitorsByPackage.Get(client.GetUserData().PackageId)
 		if !exist {
-			m = utility.NewSafeMap[WSClient, struct{}]()
+			m = utils.NewSafeMap[WSClient, struct{}]()
 			s.VisitorsByPackage.Set(client.GetUserData().PackageId, m)
 		}
 		m.Set(client, struct{}{})
 
 		m, exist = s.VisitorsByAgent.Get(client.GetUserData().AgentId)
 		if !exist {
-			m = utility.NewSafeMap[WSClient, struct{}]()
+			m = utils.NewSafeMap[WSClient, struct{}]()
 			s.VisitorsByAgent.Set(client.GetUserData().AgentId, m)
 		}
 		m.Set(client, struct{}{})
 
 		m, exist = s.VisitorsByChannel.Get(client.GetUserData().ChannelId)
 		if !exist {
-			m = utility.NewSafeMap[WSClient, struct{}]()
+			m = utils.NewSafeMap[WSClient, struct{}]()
 			s.VisitorsByChannel.Set(client.GetUserData().ChannelId, m)
 		}
 		m.Set(client, struct{}{})
